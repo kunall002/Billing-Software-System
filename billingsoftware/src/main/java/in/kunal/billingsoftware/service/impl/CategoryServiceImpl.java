@@ -4,6 +4,7 @@ import in.kunal.billingsoftware.entity.CategoryEntity;
 import in.kunal.billingsoftware.io.CategoryRequest;
 import in.kunal.billingsoftware.io.CategoryResponce;
 import in.kunal.billingsoftware.repository.CategoryRepository;
+import in.kunal.billingsoftware.repository.ItemRepository;
 import in.kunal.billingsoftware.service.CategoryService;
 import in.kunal.billingsoftware.service.FileUploadService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final FileUploadService fileUploadService;
+    private final ItemRepository itemRepository;
 
     @Override
     public CategoryResponce add(CategoryRequest request, MultipartFile file) {
@@ -46,7 +48,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     private CategoryResponce convertToResponce(CategoryEntity newCategory) {
-            return CategoryResponce.builder()
+        Integer itemCount = itemRepository.countByCategoryId(newCategory.getId());
+        return CategoryResponce.builder()
                 .categoryId(newCategory.getCategoryId())
                 .name(newCategory.getName())
                 .description(newCategory.getDescription())
@@ -54,6 +57,7 @@ public class CategoryServiceImpl implements CategoryService {
                  .imgUrl(newCategory.getImgurl())
                  .createdAt(newCategory.getCreatedAt())
                  .updatedAt(newCategory.getUpdatedAt())
+                 .items(itemCount)
                  .build();
 
     }
@@ -66,4 +70,5 @@ public class CategoryServiceImpl implements CategoryService {
                 .bgColor(request.getBgColor())
                 .build();
     }
+
 }
